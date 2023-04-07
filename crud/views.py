@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Person, FileStorage, ClassRoom
+from .models import Person, FileStorage, ClassRoom, PersonProfile
 
 def home(request):
     context = {
@@ -16,9 +16,15 @@ def create(request):
         age = request.POST.get("age")
         department = request.POST.get("department")
         status = True if request.POST.get("status") else False
-        Person.objects.create(name=name, email=email, age=age, department=department, is_active=status )
+        bio = request.POST.get("bio")
+        profile_picture = request.FILES.get("pp")
+        address = request.POST.get("address")
+        classroom = request.POST.get("classroom")
+        c = ClassRoom.objects.get(name=classroom)
+        p = Person.objects.create(name=name, email=email, age=age, department=department, is_active=status)
+        PersonProfile.objects.create(bio=bio, profile_picture=profile_picture, address=address, person=p, classroom=c)
         return redirect("home")
-    context = {"title": "Add Person"}
+    context = {"title": "Add Person", "classrooms": ClassRoom.objects.all()}
     return render(request, template_name="crud/create.html", context=context)
 
 
@@ -72,5 +78,14 @@ def add_classroom(request):
         name = request.POST.get("class_name")
         ClassRoom.objects.create(name=name)
         return redirect("classroom")
-    context = {"title": "Add Classrooms"}
+    context = {"title": "Add Classrooms",}
     return render(request, "crud/add_classroom.html", context=context)
+
+
+def person_detail(request, id):
+    try:
+        person_profile = PersonProfile.objects.get(person_id=id)
+    except PersonProfile.DoesNotExist:
+        person_profile = None
+    context = {"title" : f"Detail View", "person_profile": person_profile}
+    return render(request, "crud/detail_person.html", context=context)

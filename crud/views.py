@@ -1,14 +1,22 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from .models import Person, FileStorage, ClassRoom, PersonProfile
 
+
+@login_required
 def home(request):
+    if request.user.is_superuser:
+        queryset = Person.objects.all()
+    else:
+        queryset = Person.objects.all()[:5]
     context = {
-        "persons": Person.objects.all(), "title": "Home"
+        "persons": queryset, "title": "Home"
     }
     return render(request, template_name="crud/person.html", context=context)
 
 
 
+@login_required
 def create(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -28,6 +36,8 @@ def create(request):
     return render(request, template_name="crud/create.html", context=context)
 
 
+
+@login_required
 def update(request, id):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -46,6 +56,8 @@ def update(request, id):
     return render(request, "crud/update_person.html", context=context)
 
 
+
+@login_required
 def delete(request, id):
     if request.method == "POST":
         Person.objects.filter(id=id).delete()
@@ -59,6 +71,7 @@ def delete(request, id):
     return render(request, "crud/delete.html", context=context)
 
 
+@login_required
 def file_test(request):
     if request.method == "POST":
         file = request.FILES.get("uploaded_file")
@@ -68,11 +81,14 @@ def file_test(request):
     return render(request, "crud/file_test.html",context=context)
 
 
+@login_required
 def classroom(request):
     context = {"title": "Classrooms", "classrooms": ClassRoom.objects.all()}
     return render(request, "crud/classroom.html", context=context)
 
 
+
+@login_required
 def add_classroom(request):
     if request.method == "POST":
         name = request.POST.get("class_name")
@@ -82,6 +98,8 @@ def add_classroom(request):
     return render(request, "crud/add_classroom.html", context=context)
 
 
+
+@login_required
 def person_detail(request, id):
     try:
         person_profile = PersonProfile.objects.get(person_id=id)

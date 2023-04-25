@@ -20,8 +20,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
 
+
     path('admin/', admin.site.urls),
     # path('about/', include('myapp.urls')),
+    path("c/", include('classbased.urls')),
+    path("api/", include('api.urls')),
+    path("api/crud/", include('api_crud.urls')),
+    path("", include('account.urls')),
     path("", include('crud.urls')),
 ]
 

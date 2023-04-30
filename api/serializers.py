@@ -1,3 +1,5 @@
+
+
 from rest_framework import serializers
 from crud.models import Person, PersonProfile, ClassRoom
 
@@ -35,5 +37,7 @@ class PersonProfileSerializer(serializers.ModelSerializer):
         if request and request.method.lower() == "get":
             fields["person"] = PersonSerializer()
         return fields
+
+
 
 
